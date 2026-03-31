@@ -1499,9 +1499,26 @@ function switchTab(idx) {
 }
 
 /* ═══════════════════════════════════
-   INIT
+   INIT — window에 함수 노출 (type=module 스코프 문제 해결)
 ═══════════════════════════════════ */
-render();
+window.tryComplete    = tryComplete;
+window.closeCeleb     = closeCeleb;
+window.resetToday     = resetToday;
+window.exitParentMode = exitParentMode;
+window.showPinModal   = showPinModal;
+window.pinInput       = pinInput;
+window.openAddTask    = openAddTask;
+window.saveNewTask    = saveNewTask;
+window.saveEditTask   = saveEditTask;
+window.deleteTask     = deleteTask;
+window.openEditReward = openEditReward;
+window.saveReward     = saveReward;
+window.openEditPin    = openEditPin;
+window.savePin        = savePin;
+window.switchTab      = switchTab;
+window.buildIconPicker= buildIconPicker;
+window.closeModal     = closeModal;
+window.openModal      = openModal;
 </script>
 </body>
 </html>
