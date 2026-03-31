@@ -6,251 +6,704 @@
 <title>🚀 지우의 오늘의 할일 미션</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --purple: #6C5CE7;
-    --purple-light: #a29bfe;
-    --purple-pale: #f0eeff;
-    --green: #00b894;
-    --green-light: #55efc4;
-    --green-pale: #e8fdf7;
-    --amber: #fdcb6e;
-    --amber-dark: #e17055;
-    --red: #ff7675;
-    --blue: #74b9ff;
-    --pink: #fd79a8;
-    --gray: #636e72;
-    --gray-light: #b2bec3;
-    --gray-pale: #f8f9fa;
-    --text: #2d3436;
-    --text-muted: #636e72;
-    --border: #e0e0e0;
-    --card: #ffffff;
-    --bg: #f5f3ff;
-    --shadow: 0 4px 20px rgba(108,92,231,0.10);
-    --radius: 20px;
-    --radius-sm: 12px;
-  }
+  :root {
+    --purple: #6C5CE7;
+    --purple-light: #a29bfe;
+    --purple-pale: #f0eeff;
+    --green: #00b894;
+    --green-light: #55efc4;
+    --green-pale: #e8fdf7;
+    --amber: #fdcb6e;
+    --amber-dark: #e17055;
+    --red: #ff7675;
+    --blue: #74b9ff;
+    --pink: #fd79a8;
+    --gray: #636e72;
+    --gray-light: #b2bec3;
+    --gray-pale: #f8f9fa;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --border: #e0e0e0;
+    --card: #ffffff;
+    --bg: #f5f3ff;
+    --shadow: 0 4px 20px rgba(108,92,231,0.10);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  body {
-    font-family: 'Nunito', 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  body { font-family: 'Nunito', 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-  /* ── SCREENS ── */
-  .screen { display: none; min-height: 100vh; }
-  .screen.active { display: block; }
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
 
-  /* ── HEADER ── */
-  .app-header {
-    background: var(--purple);
-    padding: 52px 20px 28px;
-    position: relative;
-    overflow: hidden;
-  }
-  .app-header::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 180px; height: 180px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 50%;
-  }
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-  }
-  .header-greeting {
-    color: rgba(255,255,255,0.75);
-    font-size: 13px;
-    margin-bottom: 2px;
-  }
-  .header-title {
-    color: #fff;
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-  .header-actions {
-    display: flex;
-    gap: 8px;
-    position: relative;
-    z-index: 2;
-  }
-  .btn-icon {
-    width: 38px; height: 38px;
-    border-radius: 12px;
-    border: none;
-    background: rgba(255,255,255,0.18);
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
+  /* ── HEADER ── */
+  .app-header { background: var(--purple); padding: 52px 20px 28px; position: relative; overflow: hidden; }
+  .app-header::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .header-greeting { color: rgba(255,255,255,0.75); font-size: 13px; margin-bottom: 2px; }
+  .header-title { color: #fff; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .header-actions { display: flex; gap: 8px; position: relative; z-index: 2; }
+  .btn-icon { width: 38px; height: 38px; border-radius: 12px; border: none; background: rgba(255,255,255,0.18); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .stars-display { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 12px; color: #fff; font-size: 14px; font-weight: 800; }
 
-  .stars-display {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 20px;
-    padding: 5px 12px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 800;
-  }
+  /* reward preview & progress */
+  .reward-preview { background: rgba(255,255,255,0.14); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; margin-bottom: 14px; }
+  .reward-icon { font-size: 24px; }
+  .reward-text { color: rgba(255,255,255,0.9); font-size: 12px; line-height: 1.6; }
+  .reward-text strong { color: #fff; font-size: 13px; font-weight: 700; display: block; }
+  .prog-meta { display: flex; justify-content: space-between; color: rgba(255,255,255,0.75); font-size: 12px; margin-bottom: 6px; }
+  .prog-track { height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; overflow: hidden; }
+  .prog-fill { height: 100%; background: linear-gradient(90deg, #fdcb6e, #fd79a8); border-radius: 5px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
 
-  .reward-preview {
-    background: rgba(255,255,255,0.14);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: relative; z-index: 1;
-  }
-  .reward-icon { font-size: 24px; }
-  .reward-text { color: rgba(255,255,255,0.9); font-size: 12px; line-height: 1.6; }
-  .reward-text strong { color: #fff; font-size: 13px; font-weight: 700; display: block; }
+  /* ── WEEK STRIP ── */
+  .week-strip { display: flex; gap: 6px; padding: 16px 20px 0; overflow-x: auto; scrollbar-width: none; }
+  .week-strip::-webkit-scrollbar { display: none; }
+  .day-btn { flex: 0 0 auto; width: 52px; border-radius: var(--radius-sm); border: 2px solid transparent; background: var(--card); padding: 8px 4px; text-align: center; cursor: pointer; box-shadow: var(--shadow); transition: all 0.2s; }
+  .day-btn.today { border-color: var(--purple); }
+  .day-btn.weekend-selected { background: var(--purple-pale); border-color: var(--purple-light); }
+  .day-btn.completed .day-dot { background: var(--green); }
+  .day-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); margin: 4px auto 0; }
 
-  .prog-wrap { margin-top: 14px; position: relative; z-index: 1; }
-  .prog-meta { display: flex; justify-content: space-between; color: rgba(255,255,255,0.75); font-size: 12px; margin-bottom: 6px; }
-  .prog-track { height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; overflow: hidden; }
-  .prog-fill { height: 100%; background: linear-gradient(90deg, #fdcb6e, #fd79a8); border-radius: 5px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+  /* ── MISSION LIST ── */
+  .section { padding: 20px 20px 0; }
+  .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* ── WEEK STRIP ── */
-  .week-strip { display: flex; gap: 6px; padding: 16px 20px 0; overflow-x: auto; scrollbar-width: none; }
-  .week-strip::-webkit-scrollbar { display: none; }
-  .day-btn { flex: 0 0 auto; width: 52px; border-radius: var(--radius-sm); border: 2px solid transparent; background: var(--card); padding: 8px 4px; text-align: center; cursor: pointer; box-shadow: var(--shadow); }
-  .day-btn.today { border-color: var(--purple); }
-  .day-btn.completed .day-dot { background: var(--green); }
-  .day-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); margin: 4px auto 0; }
+  .mission-card { background: var(--card); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: relative; overflow: hidden; border: 2px solid transparent; transition: transform 0.2s; cursor: pointer; }
+  .mission-card.done { background: #fafffe; opacity: 0.8; }
+  .mission-card.active:active { transform: scale(0.98); }
 
-  /* ── MISSION LIST ── */
-  .section { padding: 20px 20px 0; }
-  .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .m-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .c-purple { background: var(--purple-pale); } .c-green { background: var(--green-pale); } .c-amber { background: #fff8e7; }
+  .c-blue { background: #edf6ff; } .c-pink { background: #fff0f7; } .c-gray { background: var(--gray-pale); }
 
-  .mission-card { background: var(--card); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: relative; overflow: hidden; border: 2px solid transparent; transition: transform 0.2s; }
-  .mission-card.done { background: #fafffe; }
-  .mission-card.locked { opacity: 0.5; }
-  .mission-card.active:active { transform: scale(0.98); }
+  .m-body { flex: 1; min-width: 0; }
+  .m-title { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .mission-card.done .m-title { text-decoration: line-through; color: var(--text-muted); }
+  .m-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .optional-badge { font-size: 10px; background: #fff3e0; color: #e17055; border-radius: 6px; padding: 1px 6px; font-weight: 700; }
 
-  .m-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-  .c-purple { background: var(--purple-pale); }
-  .c-green  { background: var(--green-pale); }
-  .c-amber  { background: #fff8e7; }
-  .c-blue   { background: #edf6ff; }
-  .c-pink   { background: #fff0f7; }
-  .c-gray   { background: var(--gray-pale); }
+  .m-action { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--border); background: transparent; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.2s; }
+  .m-action.done-btn { background: var(--green); border-color: var(--green); color: #fff; }
 
-  .m-body { flex: 1; min-width: 0; }
-  .m-title { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
-  .mission-card.done .m-title { text-decoration: line-through; color: var(--text-muted); }
-  .m-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .optional-badge { font-size: 10px; background: #fff3e0; color: #e17055; border-radius: 6px; padding: 1px 6px; font-weight: 700; }
+  /* Parent Mode & Edit Buttons */
+  .edit-btn-card { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 8px; border: none; background: rgba(108,92,231,0.1); color: var(--purple); font-size: 12px; display: none; align-items: center; justify-content: center; cursor: pointer; }
+  .parent-mode .edit-btn-card { display: flex; }
+  
+  .order-btns { display: none; flex-direction: column; gap: 4px; margin-right: 4px; }
+  .reorder-mode .order-btns { display: flex; }
+  .order-btn { border: none; background: var(--gray-pale); border-radius: 4px; padding: 2px 6px; font-size: 10px; cursor: pointer; }
 
-  .m-action { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--border); background: transparent; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.2s; }
-  .m-action.done-btn { background: var(--green); border-color: var(--green); color: #fff; }
+  .add-task-btn { display: none; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px 16px; background: rgba(108,92,231,0.07); border: 2px dashed var(--purple-light); border-radius: var(--radius); color: var(--purple); font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+  .parent-mode .add-task-btn { display: flex; }
 
-  .edit-btn-card { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 8px; border: none; background: rgba(108,92,231,0.1); color: var(--purple); font-size: 12px; display: none; align-items: center; justify-content: center; }
-  .parent-mode .edit-btn-card { display: flex; }
+  /* ── BOTTOM NAV & MISC ── */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); display: flex; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 100; padding-bottom: env(safe-area-inset-bottom, 0); }
+  .nav-btn { flex: 1; padding: 10px 4px 12px; border: none; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--gray-light); font-family: inherit; cursor: pointer; }
+  .nav-btn.active { color: var(--purple); }
+  .nav-label { font-size: 10px; font-weight: 700; }
+  .page-content { padding-bottom: 100px; }
 
-  /* Order Buttons */
-  .order-btns { display: none; flex-direction: column; gap: 4px; margin-right: 4px; }
-  .reorder-mode .order-btns { display: flex; }
-  .order-btn { border: none; background: var(--gray-pale); border-radius: 4px; padding: 2px 6px; font-size: 10px; cursor: pointer; }
+  .celeb-overlay { display: none; position: fixed; inset: 0; background: rgba(108,92,231,0.95); z-index: 300; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; }
+  .celeb-overlay.show { display: flex; animation: fadeIn 0.3s; }
+  .celeb-emoji { font-size: 80px; margin-bottom: 20px; animation: bounce 0.6s infinite alternate; }
+  @keyframes bounce { from{transform:scale(1)} to{transform:scale(1.15)} }
+  .celeb-btn { margin-top: 30px; padding: 16px 40px; background: #fff; color: var(--purple); border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
-  /* ── BOTTOM NAV ── */
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); display: flex; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 100; padding-bottom: env(safe-area-inset-bottom, 0); }
-  .nav-btn { flex: 1; padding: 10px 4px 12px; border: none; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--gray-light); font-family: inherit; }
-  .nav-btn.active { color: var(--purple); }
-  .nav-label { font-size: 10px; font-weight: 700; }
-  .page-content { padding-bottom: 100px; }
+  .parent-bar { background: #fff8e7; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--amber-dark); position: sticky; top: 0; z-index: 150; border-bottom: 1px solid #fdecc8; }
+  .parent-bar-off { display: none; }
 
-  /* ── CELEB OVERLAY ── */
-  .celeb-overlay { display: none; position: fixed; inset: 0; background: rgba(108,92,231,0.95); z-index: 300; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; }
-  .celeb-overlay.show { display: flex; }
-  .celeb-emoji { font-size: 80px; margin-bottom: 20px; animation: bounce 0.6s infinite alternate; }
-  @keyframes bounce { from{transform:scale(1)} to{transform:scale(1.15)} }
-  .celeb-btn { margin-top: 30px; padding: 16px 40px; background: #fff; color: var(--purple); border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; }
+  /* ── MODALS ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .modal { background: var(--card); border-radius: 28px 28px 0 0; width: 100%; max-width: 480px; padding: 24px; animation: slideUp 0.3s ease-out; max-height: 90vh; overflow-y: auto; }
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; display: block; }
+  .form-input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 12px; outline: none; font-family: inherit; font-size: 15px; }
+  .form-input:focus { border-color: var(--purple); }
+  
+  .icon-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .icon-opt { width: 42px; height: 42px; border-radius: 10px; border: 2px solid transparent; background: var(--gray-pale); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .icon-opt.selected { border-color: var(--purple); background: var(--purple-pale); }
 
-  .parent-bar { background: #fff8e7; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--amber-dark); position: sticky; top: 0; z-index: 150; border-bottom: 1px solid #fdecc8; }
-  .parent-bar-off { display: none; }
+  .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-primary { flex: 1; padding: 14px; background: var(--purple); color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; }
+  .btn-secondary { flex: 1; padding: 14px; background: var(--gray-pale); color: var(--text); border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; }
+  .btn-danger { padding: 14px 20px; background: #fff0f0; color: var(--red); border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; }
+
+  .pin-dots { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+  .pin-dot { width: 15px; height: 15px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
+  .pin-dot.filled { background: var(--purple); }
+  .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pin-key { padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: #f9f9f9; font-size: 20px; font-weight: 700; cursor: pointer; transition: all 0.1s; }
+  .pin-key:active { background: var(--purple-pale); color: var(--purple); border-color: var(--purple); }
 </style>
 </head>
 <body>
 
 <div class="parent-bar parent-bar-off" id="parentBar">
-  <span id="parentModeLabel">✏️ 부모 편집 모드</span>
-  <button onclick="exitParentMode()" style="padding:4px 12px; border-radius:8px; border:none; background:#e17055; color:#fff; font-weight:700;">완료</button>
+  <span id="parentModeLabel">✏️ 부모 편집 모드</span>
+  <button onclick="exitParentMode()" style="padding:4px 12px; border-radius:8px; border:none; background:#e17055; color:#fff; font-weight:700; cursor:pointer;">완료</button>
 </div>
 
 <div class="screen active" id="mainScreen">
-  <div class="app-header">
-    <div class="header-top">
-      <div>
-        <div class="header-greeting" id="headerGreeting">안녕! 오늘도 화이팅 🎉</div>
-        <div class="header-title" id="headerTitle">루틴 미션</div>
-      </div>
-      <div class="header-actions">
-        <div class="stars-display">⭐ <span id="starCount">0</span></div>
-        <button class="btn-icon" onclick="showPinModal()" title="부모 설정">🔒</button>
-      </div>
-    </div>
-    <div class="reward-preview" id="rewardPreview">
-      <div class="reward-icon">🎮</div>
-      <div class="reward-text">
-        <strong id="rewardTitle">주간 목표 달성하면...</strong>
-        <span id="rewardDesc">게임 2시간 + 유튜브 30분</span>
-      </div>
-    </div>
-    <div class="prog-wrap">
-      <div class="prog-meta">
-        <span>오늘 진행도</span>
-        <span id="progText">0 / 0</span>
-      </div>
-      <div class="prog-track">
-        <div class="prog-fill" id="progFill" style="width:0%"></div>
-      </div>
-    </div>
-  </div>
-  <div class="week-strip" id="weekStrip"></div>
-  <div class="page-content" id="missionArea"></div>
+  <div class="app-header">
+    <div class="header-top">
+      <div>
+        <div class="header-greeting" id="headerGreeting">안녕! 오늘도 화이팅 🎉</div>
+        <div class="header-title" id="headerTitle">루틴 미션</div>
+      </div>
+      <div class="header-actions">
+        <div class="stars-display">⭐ <span id="starCount">0</span></div>
+        <button class="btn-icon" onclick="showPinModal()" title="부모 설정">🔒</button>
+      </div>
+    </div>
+    <div class="reward-preview">
+      <div class="reward-icon">🎮</div>
+      <div class="reward-text">
+        <strong id="headerRewardTitle">주간 목표 달성하면...</strong>
+        <span id="headerRewardDesc">로딩중...</span>
+      </div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-meta"><span>진행도</span><span id="progText">0 / 0</span></div>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="week-strip" id="weekStrip"></div>
+  <div class="page-content" id="missionArea"></div>
 </div>
 
-<div class="screen" id="rewardScreen"><div class="reward-screen">... (보상 화면 렌더링)</div></div>
-<div class="screen" id="historyScreen"><div class="history-screen">... (기록 화면 렌더링)</div></div>
+<div class="screen" id="rewardScreen">
+  <div style="padding:40px 20px;">
+    <h2 style="margin-bottom:20px; font-weight:900;">🏆 획득한 보상 사용하기</h2>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">보상을 사용했다면 터치해서 체크해 주세요!</p>
+    <div id="rewardListArea"></div>
+  </div>
+</div>
+
+<div class="screen" id="historyScreen">
+  <div style="padding:40px 20px 100px;">
+    <h2 style="margin-bottom:20px; font-weight:900;">📊 기록</h2>
+    <div id="historyContent"></div>
+  </div>
+</div>
 
 <div class="bottom-nav">
-  <button class="nav-btn active" id="nav0" onclick="switchTab(0)"><span class="nav-label">미션</span></button>
-  <button class="nav-btn" id="nav1" onclick="switchTab(1)"><span class="nav-label">보상</span></button>
-  <button class="nav-btn" id="nav2" onclick="switchTab(2)"><span class="nav-label">기록</span></button>
+  <button class="nav-btn active" id="nav0" onclick="switchTab(0)"><span style="font-size:22px;">🏠</span><span class="nav-label">미션</span></button>
+  <button class="nav-btn" id="nav1" onclick="switchTab(1)"><span style="font-size:22px;">🏆</span><span class="nav-label">보상</span></button>
+  <button class="nav-btn" id="nav2" onclick="switchTab(2)"><span style="font-size:22px;">📊</span><span class="nav-label">기록</span></button>
 </div>
 
-<div class="modal-overlay" id="pinModal">... (PIN 모달 내용)</div>
+<div class="modal-overlay" id="pinModal">
+  <div class="modal">
+    <h3>🔒 부모 인증</h3>
+    <p style="font-size:13px; color:var(--text-muted); margin-top:5px;">설정 변경을 위해 PIN 번호를 입력하세요.</p>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinInput('1')">1</button><button class="pin-key" onclick="pinInput('2')">2</button><button class="pin-key" onclick="pinInput('3')">3</button>
+      <button class="pin-key" onclick="pinInput('4')">4</button><button class="pin-key" onclick="pinInput('5')">5</button><button class="pin-key" onclick="pinInput('6')">6</button>
+      <button class="pin-key" onclick="pinInput('7')">7</button><button class="pin-key" onclick="pinInput('8')">8</button><button class="pin-key" onclick="pinInput('9')">9</button>
+      <button class="pin-key" onclick="pinInput('X')" style="font-size:16px;">⌫</button><button class="pin-key" onclick="pinInput('0')">0</button><button class="pin-key" onclick="closeModal('pinModal')" style="font-size:16px;">✕</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="parentModal">
-  <div class="modal">
-    <h3>⚙️ 부모 설정</h3>
-    <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
-      <button class="btn-primary" onclick="openAddTask(); closeModal('parentModal')">+ 오늘 추가 숙제 등록</button>
-      <button class="btn-primary" style="background:#55efc4; color:#2d3436;" onclick="enterReorderMode(); closeModal('parentModal')">↕️ 미션 순서 변경</button>
-      <button class="btn-primary" style="background:#e17055;" onclick="openEditReward(); closeModal('parentModal')">🏆 보상 내용 수정</button>
-      <button class="btn-secondary" onclick="resetToday(); closeModal('parentModal')">🔄 오늘 미션 초기화</button>
-      <button class="btn-secondary" onclick="closeModal('parentModal')">닫기</button>
-    </div>
-  </div>
+  <div class="modal">
+    <h3>⚙️ 부모 설정</h3>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+      <button class="btn-primary" onclick="enterParentMode(); closeModal('parentModal')">✏️ 미션 내용 편집 모드</button>
+      <button class="btn-primary" style="background:#55efc4; color:#2d3436;" onclick="enterReorderMode(); closeModal('parentModal')">↕️ 미션 순서 변경 모드</button>
+      <button class="btn-primary" style="background:#e17055;" onclick="openEditReward(); closeModal('parentModal')">🎁 보상 내용 및 시간 수정</button>
+      <button class="btn-primary" style="background:#00b894;" onclick="openEditPin(); closeModal('parentModal')">🔑 PIN 번호 변경</button>
+      <button class="btn-secondary" onclick="resetToday(); closeModal('parentModal')">🔄 선택한 날짜 미션 초기화</button>
+      <button class="btn-secondary" onclick="closeModal('parentModal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <h3 id="taskModalTitle">미션 편집</h3>
+    <div class="form-group" style="margin-top:15px;">
+      <label class="form-label">미션 이름</label>
+      <input type="text" class="form-input" id="taskName" placeholder="예: 미술 숙제">
+    </div>
+    <div class="form-group">
+      <label class="form-label">설명 (선택)</label>
+      <input type="text" class="form-input" id="taskDesc" placeholder="예: 도화지에 그림 그리기">
+    </div>
+    <div class="form-group">
+      <label class="form-label">아이콘 선택</label>
+      <div class="icon-picker" id="taskIconPicker"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-danger" id="deleteBtn" onclick="deleteTask()">삭제</button>
+      <button class="btn-secondary" onclick="closeModal('taskModal')">취소</button>
+      <button class="btn-primary" onclick="saveTask()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editRewardModal">
+  <div class="modal">
+    <h3>🏆 보상 수정</h3>
+    <div class="form-group" style="margin-top:15px;">
+      <label class="form-label">평일 게임 시간</label>
+      <input type="text" class="form-input" id="rw-game" placeholder="예: 2시간">
+    </div>
+    <div class="form-group">
+      <label class="form-label">평일 유튜브 시간</label>
+      <input type="text" class="form-input" id="rw-yt" placeholder="예: 30분">
+    </div>
+    <div class="form-group">
+      <label class="form-label">주말 추가 보상</label>
+      <input type="text" class="form-input" id="rw-yt2" placeholder="예: 유튜브 +20분">
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="closeModal('editRewardModal')">취소</button>
+      <button class="btn-primary" onclick="saveReward()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editPinModal">
+  <div class="modal">
+    <h3>🔑 PIN 번호 변경</h3>
+    <div class="form-group" style="margin-top:15px;">
+      <label class="form-label">새 PIN (4자리 숫자)</label>
+      <input type="number" class="form-input" id="newPin" placeholder="예: 5678" maxlength="4" style="letter-spacing:0.3em;font-size:22px;text-align:center;">
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="closeModal('editPinModal')">취소</button>
+      <button class="btn-primary" onclick="savePin()">저장</button>
+    </div>
+  </div>
 </div>
 
 <div class="celeb-overlay" id="celebOverlay" onclick="closeCeleb()">
-  <div class="celeb-emoji">🎉</div>
-  <h1 style="font-size:32px;">오늘 미션 완료!</h1>
-  <p style="font-size:18px; margin-top:10px; opacity:0.9;">오늘 하루도 정말 잘했어요!</p>
-  <button class="ce
+  <div class="celeb-emoji">🎉</div>
+  <h1 style="font-size:32px;">미션 완료!</h1>
+  <p style="font-size:18px; margin-top:10px; opacity:0.9;">오늘 하루도 정말 잘했어요!</p>
+  <button class="celeb-btn" id="celebConfirmBtn" onclick="event.stopPropagation(); closeCeleb();">확인 ✓</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBruq51Nw4KsgBRieONTSZQqY9jdwXXM9Y",
+  authDomain: "jiwoo-routine.firebaseapp.com",
+  projectId: "jiwoo-routine",
+  storageBucket: "jiwoo-routine.firebasestorage.app",
+  messagingSenderId: "298637888011",
+  appId: "1:298637888011:web:1af591089f65ea572f150e",
+  databaseURL: "https://jiwoo-routine-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const ROOT = ref(db, 'routineState');
+
+/* ── 전역 상태 ── */
+let state = { pin:'1234', rewards:{ game:'2시간', yt:'30분', yt2:'+20분' }, days:{}, taskDefs:{}, rewardUsed:{} };
+let currentDay = new Date();
+let parentMode = false;
+let reorderMode = false;
+let pinBuffer = '';
+let currentEditId = null;
+const ICONS = ['📖','✏️','🔢','🌍','📚','🧮','🎻','📝','🎨','🏃','🎵','🌟','🦊','🐯','🚀','🚿','🎒','🌙'];
+let selectedIcon = ICONS[0];
+
+const WEEKDAY_TASKS = [
+  { id:'w-read', icon:'📖', title:'책읽기 (숙제1)', desc:'책 읽고 내용 떠올리기', color:'c-purple' },
+  { id:'w-poem', icon:'✏️', title:'동시 쓰기 (숙제2)', desc:'짧은 동시 한 편 써보기', color:'c-pink' },
+  { id:'w-home', icon:'🎒', title:'집에 오면 책가방 정리', desc:'가방 풀기, 알림장 꺼내기', color:'c-purple' },
+  { id:'w-shower',icon:'🚿', title:'샤워하기', desc:'머리+몸 씻기+옷 갈아입기', color:'c-blue' },
+  { id:'w-times', icon:'🔢', title:'구구단 외우기 (숙제3)', desc:'오늘의 단 암기하기', color:'c-amber' },
+  { id:'w-eng', icon:'🌍', title:'영어 클래스카드 (숙제4)', desc:'카드 학습 완료하기', color:'c-blue' },
+  { id:'w-math', icon:'🧮', title:'수학 문제집 (숙제5)', desc:'오늘 분량 풀기', color:'c-green' },
+  { id:'w-pack', icon:'🎒', title:'내일 가방 싸기', desc:'교과서·준비물 확인', color:'c-purple' },
+  { id:'w-sleep', icon:'🌙', title:'잠자기 준비', desc:'이닦기·잠옷·불 끄기', color:'c-gray' }
+];
+
+const WEEKEND_TASKS = [
+  { id:'e-book', icon:'📖', title:'독서록', desc:'독서록 작성하기', color:'c-purple' },
+  { id:'e-violin', icon:'🎻', title:'바이올린', desc:'연습 & 복습하기', color:'c-pink' },
+  { id:'e-hanuri', icon:'📚', title:'한우리 숙제', desc:'한우리 과제 완료', color:'c-green' }
+];
+
+/* ── 파이어베이스 연동 ── */
+onValue(ROOT, (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    state.pin = data.pin || '1234';
+    state.rewards = data.rewards || { game:'2시간', yt:'30분', yt2:'+20분' };
+    state.days = data.days || {};
+    state.taskDefs = data.taskDefs || {};
+    state.rewardUsed = data.rewardUsed || {};
+  }
+  render();
+});
+
+function saveState() { set(ROOT, JSON.parse(JSON.stringify(state))); }
+
+/* ── 유틸리티 ── */
+function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
+
+function getDateKey(d) {
+  const day = d.getDay();
+  if (day === 0 || day === 6) {
+    const sat = new Date(d);
+    sat.setDate(d.getDate() - (day === 0 ? 1 : 0));
+    return sat.toISOString().split('T')[0] + "_weekend";
+  }
+  return d.toISOString().split('T')[0];
+}
+
+function getTasks(date) {
+  const dk = getDateKey(date);
+  const dd = state.days[dk] || { done:{}, customTasks:[], order:[] };
+  const base = isWeekend(date) ? WEEKEND_TASKS : WEEKDAY_TASKS;
+  
+  let tasks = base.map(t => state.taskDefs[dk]?.[t.id] ? {...t, ...state.taskDefs[dk][t.id]} : t).filter(t => !t._deleted);
+  const customs = (dd.customTasks || []).map(c => ({...c, isCustom:true}));
+  let combined = [...tasks, ...customs];
+  
+  if (dd.order && dd.order.length > 0) {
+    combined.sort((a, b) => {
+      let idxA = dd.order.indexOf(a.id);
+      let idxB = dd.order.indexOf(b.id);
+      return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+    });
+  }
+  return combined;
+}
+
+/* ── 렌더링 코어 ── */
+function render() {
+  const dk = getDateKey(currentDay);
+  const tasks = getTasks(currentDay);
+  const dd = state.days[dk] || { done:{} };
+  
+  // Header
+  const doneCount = tasks.filter(t => dd.done?.[t.id]).length;
+  const total = tasks.length;
+  document.getElementById('progFill').style.width = (total ? (doneCount/total*100) : 0) + '%';
+  document.getElementById('progText').textContent = `${doneCount} / ${total} 완료`;
+  
+  const totalStars = Object.values(state.days).reduce((acc, d) => acc + Object.values(d.done || {}).filter(Boolean).length, 0);
+  document.getElementById('starCount').textContent = totalStars;
+
+  const rw = state.rewards;
+  document.getElementById('headerRewardDesc').textContent = `게임 ${rw.game} + 유튜브 ${rw.yt}`;
+  document.getElementById('headerRewardTitle').textContent = isWeekend(currentDay) ? '주말 목표 달성하면...' : '주간 목표 달성하면...';
+
+  // Week Strip
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = '';
+  const start = new Date(currentDay); 
+  start.setDate(start.getDate() - (start.getDay() === 0 ? 6 : start.getDay() - 1)); 
+  
+  for(let i=0; i<7; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const dayDK = getDateKey(d);
+    const isSel = dayDK === dk;
+    
+    const btn = document.createElement('button');
+    btn.className = `day-btn ${isSel ? (isWeekend(d) ? 'weekend-selected' : 'today') : ''}`;
+    
+    const dayTasks = getTasks(d);
+    const dayDone = dayTasks.length > 0 && dayTasks.every(t => (state.days[dayDK]?.done || {})[t.id]);
+    if(dayDone) btn.classList.add('completed');
+
+    btn.innerHTML = `<div style="font-size:10px;">${['일','월','화','수','목','금','토'][d.getDay()]}</div><div style="font-weight:900;">${d.getDate()}</div><div class="day-dot"></div>`;
+    btn.onclick = () => { currentDay = d; render(); };
+    strip.appendChild(btn);
+  }
+
+  // Mission List
+  const area = document.getElementById('missionArea');
+  area.innerHTML = '';
+  const sec = document.createElement('div');
+  sec.className = 'section' + (reorderMode ? ' reorder-mode' : '');
+  sec.innerHTML = `<div class="section-label">${isWeekend(currentDay)?'주말 루틴 (토-일 공통)':'오늘의 미션'}</div>`;
+  
+  tasks.forEach((t) => {
+    const isDone = dd.done?.[t.id];
+    const card = document.createElement('div');
+    card.className = `mission-card ${isDone?'done':'active'}`;
+    card.onclick = () => { if(!reorderMode && !parentMode) tryComplete(t.id); };
+    
+    card.innerHTML = `
+      <div class="order-btns">
+        <button class="order-btn" onclick="event.stopPropagation(); moveTask('${t.id}', -1)">▲</button>
+        <button class="order-btn" onclick="event.stopPropagation(); moveTask('${t.id}', 1)">▼</button>
+      </div>
+      <button class="edit-btn-card" onclick="event.stopPropagation(); openEditTask('${t.id}')">✏️</button>
+      <div class="m-icon ${t.color}">${t.icon}</div>
+      <div class="m-body">
+        <div class="m-title">${t.title} ${t.isCustom || t.optional ? '<span class="optional-badge">추가/선택</span>' : ''}</div>
+        <div class="m-sub">${t.desc || ''}</div>
+      </div>
+      <button class="m-action ${isDone?'done-btn':''}" onclick="event.stopPropagation(); if(!reorderMode && !parentMode) tryComplete('${t.id}')">${isDone?'✓':'→'}</button>
+    `;
+    sec.appendChild(card);
+  });
+  
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-task-btn';
+  addBtn.innerHTML = '➕ 오늘 숙제 추가 등록';
+  addBtn.onclick = openAddTask;
+  sec.appendChild(addBtn);
+  area.appendChild(sec);
+
+  // Reward List
+  const rArea = document.getElementById('rewardListArea');
+  rArea.innerHTML = '';
+  const dynamicRewards = [
+    { id:'r-game', title:`게임 ${rw.game} 사용권`, icon:'🎮', color:'c-amber' },
+    { id:'r-yt', title:`유튜브 ${rw.yt} 사용권`, icon:'📺', color:'c-blue' },
+    { id:'r-bonus', title:`주말 추가: ${rw.yt2}`, icon:'🎁', color:'c-pink' }
+  ];
+  
+  dynamicRewards.forEach(r => {
+    const isUsed = state.rewardUsed && state.rewardUsed[r.id];
+    const card = document.createElement('div');
+    card.className = `mission-card ${isUsed?'done':'active'}`;
+    card.style.cursor = 'pointer';
+    card.onclick = () => toggleReward(r.id);
+    card.innerHTML = `
+      <div class="m-icon ${r.color}">${r.icon}</div>
+      <div class="m-body">
+        <div class="m-title">${r.title}</div>
+        <div class="m-sub" style="color:${isUsed?'var(--green)':'var(--text-muted)'}; font-weight:700;">${isUsed ? '✅ 사용 완료' : '미사용 (터치해서 체크)'}</div>
+      </div>
+      <button class="m-action ${isUsed?'done-btn':''}">${isUsed?'✓':''}</button>
+    `;
+    rArea.appendChild(card);
+  });
+
+  // History List
+  const hArea = document.getElementById('historyContent');
+  hArea.innerHTML = '';
+  const allKeys = Object.keys(state.days).filter(k => k.includes('-')).sort().reverse().slice(0, 14);
+  
+  if(allKeys.length === 0) {
+    hArea.innerHTML = '<p style="color:var(--text-muted);font-size:14px;">아직 기록이 없어요 😊</p>';
+  } else {
+    allKeys.forEach(key => {
+      const dInfo = state.days[key];
+      const doneNum = Object.values(dInfo.done || {}).filter(Boolean).length;
+      if(doneNum === 0) return; // 완료된 미션이 없으면 건너뜀
+      
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;';
+      card.innerHTML = `
+        <div style="font-size:28px;">📅</div>
+        <div>
+          <div style="font-weight:800;font-size:15px;">${key.replace('_weekend', ' (주말)')}</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">⭐ ${doneNum}개 미션 완료</div>
+        </div>
+      `;
+      hArea.appendChild(card);
+    });
+  }
+}
+
+/* ── 상호작용 함수 ── */
+function tryComplete(tid) {
+  const dk = getDateKey(currentDay);
+  if(!state.days[dk]) state.days[dk] = { done:{}, customTasks:[], order:[] };
+  state.days[dk].done[tid] = !state.days[dk].done[tid];
+  saveState();
+  
+  const tasks = getTasks(currentDay);
+  if(tasks.length > 0 && tasks.every(t => state.days[dk].done[t.id])) {
+    setTimeout(() => document.getElementById('celebOverlay').classList.add('show'), 300);
+  }
+}
+
+function toggleReward(rid) {
+  if(!state.rewardUsed) state.rewardUsed = {};
+  state.rewardUsed[rid] = !state.rewardUsed[rid];
+  saveState();
+}
+
+function moveTask(tid, dir) {
+  const dk = getDateKey(currentDay);
+  if(!state.days[dk]) state.days[dk] = { done:{}, customTasks:[], order:[] };
+  let order = getTasks(currentDay).map(t => t.id);
+  let idx = order.indexOf(tid);
+  let newIdx = idx + dir;
+  if(newIdx >= 0 && newIdx < order.length) {
+    [order[idx], order[newIdx]] = [order[newIdx], order[idx]];
+    state.days[dk].order = order;
+    saveState();
+  }
+}
+
+function pinInput(k) {
+  if(k === 'X') pinBuffer = pinBuffer.slice(0,-1);
+  else if(pinBuffer.length < 4) pinBuffer += k;
+  
+  for(let i=0; i<4; i++) document.getElementById('pd'+i).classList.toggle('filled', i < pinBuffer.length);
+  
+  if(pinBuffer === state.pin) {
+    pinBuffer = ''; closeModal('pinModal'); openModal('parentModal');
+  } else if(pinBuffer.length === 4) {
+    pinBuffer = ''; alert('비밀번호가 틀렸습니다.');
+    for(let i=0; i<4; i++) document.getElementById('pd'+i).classList.remove('filled');
+  }
+}
+
+/* ── 부모 설정 및 편집 로직 ── */
+function enterParentMode() {
+  parentMode = true; reorderMode = false;
+  document.body.classList.add('parent-mode');
+  document.getElementById('parentBar').classList.remove('parent-bar-off');
+  document.getElementById('parentModeLabel').textContent = '✏️ 미션 내용 편집 중';
+  render();
+}
+
+function enterReorderMode() {
+  reorderMode = true; parentMode = false;
+  document.body.classList.remove('parent-mode');
+  document.getElementById('parentBar').classList.remove('parent-bar-off');
+  document.getElementById('parentModeLabel').textContent = '↕️ 미션 순서 변경 중';
+  render();
+}
+
+function exitParentMode() {
+  parentMode = false; reorderMode = false;
+  document.body.classList.remove('parent-mode');
+  document.getElementById('parentBar').classList.add('parent-bar-off');
+  render();
+}
+
+function buildIconPicker() {
+  const p = document.getElementById('taskIconPicker');
+  p.innerHTML = '';
+  ICONS.forEach(ic => {
+    const b = document.createElement('button');
+    b.className = `icon-opt ${ic===selectedIcon?'selected':''}`;
+    b.textContent = ic;
+    b.onclick = () => { selectedIcon = ic; buildIconPicker(); };
+    p.appendChild(b);
+  });
+}
+
+function openAddTask() {
+  currentEditId = null;
+  document.getElementById('taskModalTitle').textContent = '➕ 새 미션 추가';
+  document.getElementById('taskName').value = '';
+  document.getElementById('taskDesc').value = '';
+  document.getElementById('deleteBtn').style.display = 'none';
+  selectedIcon = ICONS[0];
+  buildIconPicker();
+  openModal('taskModal');
+}
+
+function openEditTask(tid) {
+  currentEditId = tid;
+  const tasks = getTasks(currentDay);
+  const t = tasks.find(x => x.id === tid);
+  document.getElementById('taskModalTitle').textContent = '✏️ 미션 수정';
+  document.getElementById('taskName').value = t.title;
+  document.getElementById('taskDesc').value = t.desc || '';
+  document.getElementById('deleteBtn').style.display = 'block';
+  selectedIcon = t.icon;
+  buildIconPicker();
+  openModal('taskModal');
+}
+
+function saveTask() {
+  const name = document.getElementById('taskName').value.trim();
+  if(!name) { alert('미션 이름을 입력하세요!'); return; }
+  const dk = getDateKey(currentDay);
+  const desc = document.getElementById('taskDesc').value.trim();
+
+  if(!currentEditId) { // 새 항목
+    if(!state.days[dk]) state.days[dk] = { done:{}, customTasks:[], order:[] };
+    if(!state.days[dk].customTasks) state.days[dk].customTasks = [];
+    const nid = 'c' + Date.now();
+    state.days[dk].customTasks.push({ id:nid, title:name, desc:desc, icon:selectedIcon, color:'c-amber', isCustom:true });
+  } else { // 기존 항목 수정
+    const tasks = getTasks(currentDay);
+    const t = tasks.find(x => x.id === currentEditId);
+    if(t.isCustom) {
+      const ct = state.days[dk].customTasks.find(x => x.id === currentEditId);
+      if(ct) { ct.title = name; ct.desc = desc; ct.icon = selectedIcon; }
+    } else {
+      if(!state.taskDefs[dk]) state.taskDefs[dk] = {};
+      state.taskDefs[dk][currentEditId] = { title:name, desc:desc, icon:selectedIcon };
+    }
+  }
+  saveState(); closeModal('taskModal');
+}
+
+function deleteTask() {
+  if(!confirm('정말 삭제할까요?')) return;
+  const dk = getDateKey(currentDay);
+  const tasks = getTasks(currentDay);
+  const t = tasks.find(x => x.id === currentEditId);
+  if(t.isCustom) {
+    state.days[dk].customTasks = state.days[dk].customTasks.filter(x => x.id !== currentEditId);
+  } else {
+    if(!state.taskDefs[dk]) state.taskDefs[dk] = {};
+    state.taskDefs[dk][currentEditId] = { _deleted: true };
+  }
+  saveState(); closeModal('taskModal');
+}
+
+/* ── window 전역 등록 ── */
+window.tryComplete = tryComplete;
+window.moveTask = moveTask;
+window.enterParentMode = enterParentMode;
+window.enterReorderMode = enterReorderMode;
+window.exitParentMode = exitParentMode;
+window.openAddTask = openAddTask;
+window.openEditTask = openEditTask;
+window.saveTask = saveTask;
+window.deleteTask = deleteTask;
+window.closeCeleb = () => document.getElementById('celebOverlay').classList.remove('show');
+window.showPinModal = () => { pinBuffer = ''; for(let i=0; i<4; i++) document.getElementById('pd'+i).classList.remove('filled'); openModal('pinModal'); };
+window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+window.openModal = (id) => document.getElementById(id).classList.add('open');
+window.pinInput = pinInput;
+window.resetToday = () => { if(confirm('이 날의 미션을 초기화할까요?')) { const dk=getDateKey(currentDay); if(state.days[dk]) state.days[dk].done = {}; saveState(); } };
+window.switchTab = (idx) => { 
+  document.querySelectorAll('.screen').forEach((s, i) => s.classList.toggle('active', i === idx)); 
+  document.querySelectorAll('.nav-btn').forEach((b, i) => b.classList.toggle('active', i === idx)); 
+};
+window.openEditReward = () => {
+  document.getElementById('rw-game').value = state.rewards.game;
+  document.getElementById('rw-yt').value = state.rewards.yt;
+  document.getElementById('rw-yt2').value = state.rewards.yt2;
+  openModal('editRewardModal');
+};
+window.saveReward = () => {
+  state.rewards.game = document.getElementById('rw-game').value.trim() || state.rewards.game;
+  state.rewards.yt = document.getElementById('rw-yt').value.trim() || state.rewards.yt;
+  state.rewards.yt2 = document.getElementById('rw-yt2').value.trim() || state.rewards.yt2;
+  saveState(); closeModal('editRewardModal');
+};
+window.openEditPin = () => { document.getElementById('newPin').value = ''; openModal('editPinModal'); };
+window.savePin = () => {
+  const p = document.getElementById('newPin').value.trim();
+  if(!/^\d{4}$/.test(p)){ alert('4자리 숫자를 입력하세요!'); return; }
+  state.pin = p; saveState(); closeModal('editPinModal'); alert('PIN 번호가 변경되었습니다.');
+};
+</script>
+</body>
+</html>
