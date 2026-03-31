@@ -358,17 +358,26 @@ onValue(ROOT, (snapshot) => {
 
 function saveState() { set(ROOT, JSON.parse(JSON.stringify(state))); }
 
-/* ── 유틸리티 ── */
+/* ── 유틸리티 (시간/날짜 보정) ── */
+// 사용자의 로컬(한국) 시간 기준 YYYY-MM-DD 생성
+function getLocalYYYYMMDD(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
 
 function getDateKey(d) {
   const day = d.getDay();
+  // 주말(토,일)은 항상 그 주의 토요일 날짜 키를 공유 (통합 관리)
   if (day === 0 || day === 6) {
     const sat = new Date(d);
     sat.setDate(d.getDate() - (day === 0 ? 1 : 0));
-    return sat.toISOString().split('T')[0] + "_weekend";
+    return getLocalYYYYMMDD(sat) + "_weekend";
   }
-  return d.toISOString().split('T')[0];
+  return getLocalYYYYMMDD(d);
 }
 
 function getTasks(date) {
@@ -376,10 +385,14 @@ function getTasks(date) {
   const dd = state.days[dk] || { done:{}, customTasks:[], order:[] };
   const base = isWeekend(date) ? WEEKEND_TASKS : WEEKDAY_TASKS;
   
+  // 1. 기본 미션에 부모님이 수정한 내용(taskDefs) 덮어쓰기 & 삭제된 것 필터링
   let tasks = base.map(t => state.taskDefs[dk]?.[t.id] ? {...t, ...state.taskDefs[dk][t.id]} : t).filter(t => !t._deleted);
+  
+  // 2. 부모님이 새로 추가한 커스텀 미션 합치기
   const customs = (dd.customTasks || []).map(c => ({...c, isCustom:true}));
   let combined = [...tasks, ...customs];
   
+  // 3. 순서 정렬 반영
   if (dd.order && dd.order.length > 0) {
     combined.sort((a, b) => {
       let idxA = dd.order.indexOf(a.id);
@@ -396,7 +409,7 @@ function render() {
   const tasks = getTasks(currentDay);
   const dd = state.days[dk] || { done:{} };
   
-  // Header
+  // 1. Header (진행도, 별, 보상 텍스트)
   const doneCount = tasks.filter(t => dd.done?.[t.id]).length;
   const total = tasks.length;
   document.getElementById('progFill').style.width = (total ? (doneCount/total*100) : 0) + '%';
@@ -409,20 +422,22 @@ function render() {
   document.getElementById('headerRewardDesc').textContent = `게임 ${rw.game} + 유튜브 ${rw.yt}`;
   document.getElementById('headerRewardTitle').textContent = isWeekend(currentDay) ? '주말 목표 달성하면...' : '주간 목표 달성하면...';
 
-  // Week Strip
+  // 2. 주간 달력 (Week Strip)
   const strip = document.getElementById('weekStrip');
   strip.innerHTML = '';
   const start = new Date(currentDay); 
+  // 현재 보고있는 날짜가 속한 주의 월요일 찾기
   start.setDate(start.getDate() - (start.getDay() === 0 ? 6 : start.getDay() - 1)); 
   
   for(let i=0; i<7; i++) {
     const d = new Date(start); d.setDate(start.getDate() + i);
     const dayDK = getDateKey(d);
-    const isSel = dayDK === dk;
+    const isSel = dayDK === dk; // 같은 날짜키(주말은 공유)면 선택된 것으로 표시
     
     const btn = document.createElement('button');
     btn.className = `day-btn ${isSel ? (isWeekend(d) ? 'weekend-selected' : 'today') : ''}`;
     
+    // 이 날짜의 완료 상태 체크
     const dayTasks = getTasks(d);
     const dayDone = dayTasks.length > 0 && dayTasks.every(t => (state.days[dayDK]?.done || {})[t.id]);
     if(dayDone) btn.classList.add('completed');
@@ -432,7 +447,7 @@ function render() {
     strip.appendChild(btn);
   }
 
-  // Mission List
+  // 3. 미션 리스트 영역
   const area = document.getElementById('missionArea');
   area.innerHTML = '';
   const sec = document.createElement('div');
@@ -451,6 +466,7 @@ function render() {
         <button class="order-btn" onclick="event.stopPropagation(); moveTask('${t.id}', 1)">▼</button>
       </div>
       <button class="edit-btn-card" onclick="event.stopPropagation(); openEditTask('${t.id}')">✏️</button>
+      
       <div class="m-icon ${t.color}">${t.icon}</div>
       <div class="m-body">
         <div class="m-title">${t.title} ${t.isCustom || t.optional ? '<span class="optional-badge">추가/선택</span>' : ''}</div>
@@ -461,14 +477,16 @@ function render() {
     sec.appendChild(card);
   });
   
+  // + 추가 버튼 (부모 모드일때만 보임)
   const addBtn = document.createElement('button');
   addBtn.className = 'add-task-btn';
   addBtn.innerHTML = '➕ 오늘 숙제 추가 등록';
   addBtn.onclick = openAddTask;
   sec.appendChild(addBtn);
+
   area.appendChild(sec);
 
-  // Reward List
+  // 4. 보상 리스트 렌더링
   const rArea = document.getElementById('rewardListArea');
   rArea.innerHTML = '';
   const dynamicRewards = [
@@ -494,7 +512,7 @@ function render() {
     rArea.appendChild(card);
   });
 
-  // History List
+  // 5. 기록(History) 렌더링 - 로컬 날짜 형식 파싱 추가
   const hArea = document.getElementById('historyContent');
   hArea.innerHTML = '';
   const allKeys = Object.keys(state.days).filter(k => k.includes('-')).sort().reverse().slice(0, 14);
@@ -507,12 +525,28 @@ function render() {
       const doneNum = Object.values(dInfo.done || {}).filter(Boolean).length;
       if(doneNum === 0) return; // 완료된 미션이 없으면 건너뜀
       
+      // 날짜 예쁘게 포맷팅 (예: 4월 1일 (수) / 4월 4일 주말)
+      let titleStr = key;
+      try {
+        if(key.includes('_weekend')) {
+          const [y, m, d] = key.split('_')[0].split('-');
+          titleStr = `${parseInt(m)}월 ${parseInt(d)}일 주말 (토~일)`;
+        } else {
+          const [y, m, d] = key.split('-');
+          const dateObj = new Date(y, parseInt(m)-1, d);
+          const dayName = ['일','월','화','수','목','금','토'][dateObj.getDay()];
+          titleStr = `${parseInt(m)}월 ${parseInt(d)}일 (${dayName})`;
+        }
+      } catch(e) {
+        titleStr = key.replace('_weekend', ' (주말)'); // 파싱 실패 시 기본값
+      }
+      
       const card = document.createElement('div');
       card.style.cssText = 'background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;';
       card.innerHTML = `
         <div style="font-size:28px;">📅</div>
         <div>
-          <div style="font-weight:800;font-size:15px;">${key.replace('_weekend', ' (주말)')}</div>
+          <div style="font-weight:800;font-size:15px;">${titleStr}</div>
           <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">⭐ ${doneNum}개 미션 완료</div>
         </div>
       `;
@@ -572,7 +606,7 @@ function enterParentMode() {
   parentMode = true; reorderMode = false;
   document.body.classList.add('parent-mode');
   document.getElementById('parentBar').classList.remove('parent-bar-off');
-  document.getElementById('parentModeLabel').textContent = '✏️ 미션 내용 편집 중';
+  document.getElementById('parentModeText').textContent = '✏️ 미션 내용 편집 중';
   render();
 }
 
@@ -580,7 +614,7 @@ function enterReorderMode() {
   reorderMode = true; parentMode = false;
   document.body.classList.remove('parent-mode');
   document.getElementById('parentBar').classList.remove('parent-bar-off');
-  document.getElementById('parentModeLabel').textContent = '↕️ 미션 순서 변경 중';
+  document.getElementById('parentModeText').textContent = '↕️ 미션 순서 변경 중';
   render();
 }
 
@@ -606,50 +640,56 @@ function buildIconPicker() {
 function openAddTask() {
   currentEditId = null;
   document.getElementById('taskModalTitle').textContent = '➕ 새 미션 추가';
-  document.getElementById('taskName').value = '';
-  document.getElementById('taskDesc').value = '';
+  document.getElementById('newTaskName').value = '';
+  document.getElementById('newTaskDesc').value = '';
   document.getElementById('deleteBtn').style.display = 'none';
   selectedIcon = ICONS[0];
   buildIconPicker();
-  openModal('taskModal');
+  openModal('addTaskModal');
 }
 
 function openEditTask(tid) {
   currentEditId = tid;
   const tasks = getTasks(currentDay);
   const t = tasks.find(x => x.id === tid);
-  document.getElementById('taskModalTitle').textContent = '✏️ 미션 수정';
-  document.getElementById('taskName').value = t.title;
-  document.getElementById('taskDesc').value = t.desc || '';
-  document.getElementById('deleteBtn').style.display = 'block';
+  document.getElementById('editTaskName').value = t.title;
+  document.getElementById('editTaskDesc').value = t.desc || '';
+  
   selectedIcon = t.icon;
   buildIconPicker();
-  openModal('taskModal');
+  openModal('editTaskModal');
 }
 
-function saveTask() {
-  const name = document.getElementById('taskName').value.trim();
+function saveNewTask() {
+  const name = document.getElementById('newTaskName').value.trim();
   if(!name) { alert('미션 이름을 입력하세요!'); return; }
   const dk = getDateKey(currentDay);
-  const desc = document.getElementById('taskDesc').value.trim();
+  const desc = document.getElementById('newTaskDesc').value.trim();
 
-  if(!currentEditId) { // 새 항목
-    if(!state.days[dk]) state.days[dk] = { done:{}, customTasks:[], order:[] };
-    if(!state.days[dk].customTasks) state.days[dk].customTasks = [];
-    const nid = 'c' + Date.now();
-    state.days[dk].customTasks.push({ id:nid, title:name, desc:desc, icon:selectedIcon, color:'c-amber', isCustom:true });
-  } else { // 기존 항목 수정
-    const tasks = getTasks(currentDay);
-    const t = tasks.find(x => x.id === currentEditId);
-    if(t.isCustom) {
-      const ct = state.days[dk].customTasks.find(x => x.id === currentEditId);
-      if(ct) { ct.title = name; ct.desc = desc; ct.icon = selectedIcon; }
-    } else {
-      if(!state.taskDefs[dk]) state.taskDefs[dk] = {};
-      state.taskDefs[dk][currentEditId] = { title:name, desc:desc, icon:selectedIcon };
-    }
+  if(!state.days[dk]) state.days[dk] = { done:{}, customTasks:[], order:[] };
+  if(!state.days[dk].customTasks) state.days[dk].customTasks = [];
+  const nid = 'c' + Date.now();
+  state.days[dk].customTasks.push({ id:nid, title:name, desc:desc, icon:selectedIcon, color:'c-amber', isCustom:true });
+  
+  saveState(); closeModal('addTaskModal');
+}
+
+function saveEditTask() {
+  const name = document.getElementById('editTaskName').value.trim();
+  if(!name) { alert('미션 이름을 입력하세요!'); return; }
+  const dk = getDateKey(currentDay);
+  const desc = document.getElementById('editTaskDesc').value.trim();
+
+  const tasks = getTasks(currentDay);
+  const t = tasks.find(x => x.id === currentEditId);
+  if(t.isCustom) {
+    const ct = state.days[dk].customTasks.find(x => x.id === currentEditId);
+    if(ct) { ct.title = name; ct.desc = desc; ct.icon = selectedIcon; }
+  } else {
+    if(!state.taskDefs[dk]) state.taskDefs[dk] = {};
+    state.taskDefs[dk][currentEditId] = { title:name, desc:desc, icon:selectedIcon };
   }
-  saveState(); closeModal('taskModal');
+  saveState(); closeModal('editTaskModal');
 }
 
 function deleteTask() {
@@ -663,7 +703,7 @@ function deleteTask() {
     if(!state.taskDefs[dk]) state.taskDefs[dk] = {};
     state.taskDefs[dk][currentEditId] = { _deleted: true };
   }
-  saveState(); closeModal('taskModal');
+  saveState(); closeModal('editTaskModal');
 }
 
 /* ── window 전역 등록 ── */
@@ -674,14 +714,16 @@ window.enterReorderMode = enterReorderMode;
 window.exitParentMode = exitParentMode;
 window.openAddTask = openAddTask;
 window.openEditTask = openEditTask;
-window.saveTask = saveTask;
+window.saveNewTask = saveNewTask;
+window.saveEditTask = saveEditTask;
 window.deleteTask = deleteTask;
+window.toggleReward = toggleReward;
 window.closeCeleb = () => document.getElementById('celebOverlay').classList.remove('show');
 window.showPinModal = () => { pinBuffer = ''; for(let i=0; i<4; i++) document.getElementById('pd'+i).classList.remove('filled'); openModal('pinModal'); };
 window.closeModal = (id) => document.getElementById(id).classList.remove('open');
 window.openModal = (id) => document.getElementById(id).classList.add('open');
 window.pinInput = pinInput;
-window.resetToday = () => { if(confirm('이 날의 미션을 초기화할까요?')) { const dk=getDateKey(currentDay); if(state.days[dk]) state.days[dk].done = {}; saveState(); } };
+window.resetToday = () => { if(confirm('선택한 날짜의 미션을 초기화할까요?')) { const dk=getDateKey(currentDay); if(state.days[dk]) state.days[dk].done = {}; saveState(); } };
 window.switchTab = (idx) => { 
   document.querySelectorAll('.screen').forEach((s, i) => s.classList.toggle('active', i === idx)); 
   document.querySelectorAll('.nav-btn').forEach((b, i) => b.classList.toggle('active', i === idx)); 
