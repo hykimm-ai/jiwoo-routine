@@ -956,18 +956,21 @@ const WEEKEND_TASKS = [
   { id:'e-hanuri',  icon:'📚', title:'한우리 숙제', desc:'한우리 과제 완료',  color:'c-green',  optional:false },
 ];
 
-// 로딩 표시
+// 로딩 표시 — 완료 후 DOM에서 완전 제거
 function showLoading(show) {
   let el = document.getElementById('loadingOverlay');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'loadingOverlay';
-    el.style.cssText = 'position:fixed;inset:0;background:rgba(108,92,231,0.92);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;gap:16px;font-family:Nunito,sans-serif;';
-    el.innerHTML = '<div style="font-size:56px;animation:spin 1s linear infinite">🚀</div><div>데이터 불러오는 중...</div>';
-    document.head.insertAdjacentHTML('beforeend','<style>@keyframes spin{to{transform:rotate(360deg)}}</style>');
-    document.body.appendChild(el);
+  if (show) {
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'loadingOverlay';
+      el.style.cssText = 'position:fixed;inset:0;background:rgba(108,92,231,0.92);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;gap:16px;font-family:Nunito,sans-serif;';
+      el.innerHTML = '<div style="font-size:56px;animation:spin 1s linear infinite">🚀</div><div>데이터 불러오는 중...</div>';
+      document.head.insertAdjacentHTML('beforeend','<style>@keyframes spin{to{transform:rotate(360deg)}}</style>');
+      document.body.appendChild(el);
+    }
+  } else {
+    if (el) el.remove(); // DOM에서 완전 제거
   }
-  el.style.display = show ? 'flex' : 'none';
 }
 
 function saveState(s) {
@@ -994,7 +997,7 @@ onValue(ROOT, (snapshot) => {
     if (!state.days) state.days = {};
     if (!state.taskDefs) state.taskDefs = {};
   }
-  showLoading(false);
+  showLoading(false); // 첫 로드 후 오버레이 완전 제거
   render();
 });
 
